@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace CizimUygulamasi
 {
     public partial class Case1 : Form
@@ -19,7 +21,12 @@ namespace CizimUygulamasi
         public Case1()
         {
             InitializeComponent();
+
             this.DoubleBuffered = true;
+
+            typeof(Panel).InvokeMember("DoubleBuffered",
+             BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+             null, panel1, new object[] { true });
 
             this.Load += Case1_Load;
 
@@ -572,7 +579,7 @@ namespace CizimUygulamasi
                 manager.SeciliSekil.Renk = secilenRenk;
             }
 
-                panel1.Invalidate();
+            panel1.Invalidate();
         }
 
         private void SekilButonunuIsaretle(Button btn)
@@ -612,10 +619,10 @@ namespace CizimUygulamasi
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 try
-            {
-                manager.Temizle();
-                foreach (var line in File.ReadLines(ofd.FileName))
                 {
+                    manager.Temizle();
+                    foreach (var line in File.ReadLines(ofd.FileName))
+                    {
                         string[] parts = line.Split(';');
                         if (parts.Length < 4) continue;
 
@@ -629,8 +636,8 @@ namespace CizimUygulamasi
 
                         try
                         {
-                    var bas = parts[1].Split(',');
-                    var bit = parts[2].Split(',');
+                            var bas = parts[1].Split(',');
+                            var bit = parts[2].Split(',');
 
                             if (bas.Length < 2 || bit.Length < 2) continue;
 
@@ -639,19 +646,19 @@ namespace CizimUygulamasi
 
                             var renk = Color.FromArgb(argb);
 
-                    sekil.Baslangic = new Point(int.Parse(bas[0]), int.Parse(bas[1]));
-                    sekil.Bitis = new Point(int.Parse(bit[0]), int.Parse(bit[1]));
-                    sekil.Renk = renk;
+                            sekil.Baslangic = new Point(int.Parse(bas[0]), int.Parse(bas[1]));
+                            sekil.Bitis = new Point(int.Parse(bit[0]), int.Parse(bit[1]));
+                            sekil.Renk = renk;
 
-                    manager.SekilEkle(sekil);
+                            manager.SekilEkle(sekil);
                         }
                         catch
                         {
                             continue;
                         }
-                }
+                    }
 
-                panel1.Invalidate();
+                    panel1.Invalidate();
                     MessageBox.Show("Dosya başarıyla yüklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
@@ -681,11 +688,11 @@ namespace CizimUygulamasi
                 {
                     using (StreamWriter sw = new(sfd.FileName))
                     {
-                foreach (var sekil in manager.Sekiller)
-                {
-                    sw.WriteLine($"{sekil.SekilTipi};{sekil.Baslangic.X},{sekil.Baslangic.Y};{sekil.Bitis.X},{sekil.Bitis.Y};{sekil.Renk.ToArgb()}");
-                }
-            }
+                        foreach (var sekil in manager.Sekiller)
+                        {
+                            sw.WriteLine($"{sekil.SekilTipi};{sekil.Baslangic.X},{sekil.Baslangic.Y};{sekil.Bitis.X},{sekil.Bitis.Y};{sekil.Renk.ToArgb()}");
+                        }
+                    }
 
                     MessageBox.Show("Dosya başarıyla kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
